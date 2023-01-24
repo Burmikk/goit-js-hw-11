@@ -29,12 +29,11 @@ async function onSearch(event) {
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
         }
         else if (value !== inputEl.value) {
-            showBtn()
+        showBtn()
 
            Notiflix.Notify.success(`Hooray! We found ${data.data.totalHits} images.`) 
             value = inputEl.value
             galleryEl.innerHTML = ""
-            loadMoreEl.classList.remove("hidden")
             onCreateMakrup(data.data.hits)
             gallery = new SimpleLightbox('.gallery a');
             disableBtn()
