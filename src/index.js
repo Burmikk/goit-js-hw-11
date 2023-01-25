@@ -139,6 +139,7 @@ galleryEl.insertAdjacentHTML('beforeend', markup)
 }
 
 async function showBtn() {
+     btnTextEl.textContent = "Loading..."
     loadMoreEl.classList.remove("hidden")
         spinerEl.classList.remove("hidden")
 
