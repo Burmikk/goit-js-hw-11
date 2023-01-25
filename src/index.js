@@ -24,7 +24,6 @@ async function onSearch(event) {
     event.preventDefault()
     inputValue = inputEl.value
     page = 1
-
         if (inputEl.value.trim() === "") {
             Notiflix.Notify.failure("Type something to find images")
         }
@@ -35,7 +34,6 @@ async function onSearch(event) {
         } else if (value !== inputEl.value) {
             imageCounter = data.data.totalHits - perPage
             showBtn()
-            console.log(data)
            Notiflix.Notify.success(`Hooray! We found ${data.data.totalHits} images.`) 
             value = inputEl.value
             galleryEl.innerHTML = ""
