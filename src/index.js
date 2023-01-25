@@ -33,7 +33,7 @@ async function onSearch(event) {
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
         } else if (value !== inputEl.value) {
             imageCounter = data.data.totalHits - perPage
-            showBtn()
+            enableBtn()
            Notiflix.Notify.success(`Hooray! We found ${data.data.totalHits} images.`) 
             value = inputEl.value
             galleryEl.innerHTML = ""
@@ -138,13 +138,15 @@ galleryEl.insertAdjacentHTML('beforeend', markup)
 
 }
 
-async function showBtn() {
-     btnTextEl.textContent = "Loading..."
-    loadMoreEl.classList.remove("hidden")
-        spinerEl.classList.remove("hidden")
+// async function showBtn() {
+//      btnTextEl.textContent = "Loading..."
+//     loadMoreEl.classList.remove("hidden")
+//         spinerEl.classList.remove("hidden")
 
-}
+// }
+
 function enableBtn() {
+    loadMoreEl.classList.remove("hidden")
     btnTextEl.textContent = "Loading..."
     spinerEl.classList.remove("hidden")
 }
