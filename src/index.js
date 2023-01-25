@@ -17,7 +17,6 @@ let value = ""
 let gallery
 let inputValue
 let imageCounter
-let totalHits
 
 form.addEventListener("submit", onSearch) 
 
@@ -33,11 +32,8 @@ async function onSearch(event) {
         if (data.data.hits.length === 0) {
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
         } else if (value !== inputEl.value) {
-            totalHits = data.data.totalHits
-            imageCounter = totalHits - perPage
-            if (imageCounter > 0) {
-                showBtn()
-            }
+            imageCounter = data.data.totalHits - perPage
+            showBtn()
            Notiflix.Notify.success(`Hooray! We found ${data.data.totalHits} images.`) 
             value = inputEl.value
             galleryEl.innerHTML = ""
@@ -46,7 +42,11 @@ async function onSearch(event) {
                 onCreateMakrup(data.data.hits)
                 gallery = new SimpleLightbox('.gallery a');
                 disableBtn()
+                if (imageCounter < 0) {
+                loadMoreEl.classList.add("hidden")
+            }
             }, 500) 
+            
             
         } 
             })
@@ -67,10 +67,9 @@ async function fetchData() {
         
         
 
-    } )
-// ?key=${KEY}&q=${inputValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page})
-    // const response = axios.get(`${URL}?key=${KEY}&q=${inputValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
-        // const data = await response.json()
+    })
+        // второй вариант запроса без параметров
+        // const response = axios.get(`${URL}?key=${KEY}&q=${inputValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
     
         return response
         
@@ -81,14 +80,15 @@ loadMoreEl.addEventListener('click', onLoadMore)
 
 async function onLoadMore() {
     imageCounter -= perPage
-    if (imageCounter <= 0 ) {
-        loadMoreEl.classList.add("hidden")
-    }
+   
     enableBtn()
     page+=1
     const moreFetch = await fetchData().then(data => {
         onCreateMakrup(data.data.hits)
         gallery.refresh()
+         if (imageCounter <= 0 ) {
+        loadMoreEl.classList.add("hidden")
+    }
     })
 
     const { height: cardHeight } = document
