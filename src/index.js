@@ -17,6 +17,7 @@ let value = ""
 let gallery
 let inputValue
 let imageCounter
+let totalHits
 
 form.addEventListener("submit", onSearch) 
 
@@ -32,21 +33,43 @@ async function onSearch(event) {
         if (data.data.hits.length === 0) {
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
         } else if (value !== inputEl.value) {
-            imageCounter = data.data.totalHits - perPage
-            showBtn()
+            totalHits = data.data.totalHits
+            imageCounter = totalHits - perPage
+            if (imageCounter > 0) {
+                showBtn()
+            }
            Notiflix.Notify.success(`Hooray! We found ${data.data.totalHits} images.`) 
             value = inputEl.value
             galleryEl.innerHTML = ""
-            onCreateMakrup(data.data.hits)
-            gallery = new SimpleLightbox('.gallery a');
-            disableBtn()
+            // onCreateMakrup(data.data.hits)
+            setTimeout(() => {
+                onCreateMakrup(data.data.hits)
+                gallery = new SimpleLightbox('.gallery a');
+                disableBtn()
+            }, 500) 
+            
         } 
             })
         }
 }
 
 async function fetchData() {
-        const response = axios.get(`${URL}?key=${KEY}&q=${inputValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
+    const response = axios.get(`${URL}`, {
+        params: {
+        key: KEY,
+        q: inputValue,
+        image_type: "photo",
+        orientation: "horizontal",
+        safesearch: true,
+        per_page: perPage,
+        page: page
+        }
+        
+        
+
+    } )
+// ?key=${KEY}&q=${inputValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page})
+    // const response = axios.get(`${URL}?key=${KEY}&q=${inputValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
         // const data = await response.json()
     
         return response
@@ -58,7 +81,7 @@ loadMoreEl.addEventListener('click', onLoadMore)
 
 async function onLoadMore() {
     imageCounter -= perPage
-    if (imageCounter <= 0) {
+    if (imageCounter <= 0 ) {
         loadMoreEl.classList.add("hidden")
     }
     enableBtn()
@@ -117,6 +140,8 @@ galleryEl.insertAdjacentHTML('beforeend', markup)
 
 async function showBtn() {
     loadMoreEl.classList.remove("hidden")
+        spinerEl.classList.remove("hidden")
+
 }
 function enableBtn() {
     btnTextEl.textContent = "Loading..."
