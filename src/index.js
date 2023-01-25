@@ -11,40 +11,44 @@ const galleryEl = document.querySelector(".gallery")
 const loadMoreEl = document.querySelector(".load-more")
 const btnTextEl = document.querySelector(".text")
 const spinerEl = document.querySelector(".spinner-border")
+const perPage = 40
 let page = 1
 let value = ""
 let gallery
-
+let inputValue
+let imageCounter
 
 form.addEventListener("submit", onSearch) 
 
 async function onSearch(event) {
     event.preventDefault()
+    inputValue = inputEl.value
     page = 1
-    const fetch = await fetchData().then(data => {
-        if (inputEl.value === "") {
+
+        if (inputEl.value.trim() === "") {
             Notiflix.Notify.failure("Type something to find images")
         }
-        else if (data.data.hits.length === 0) {
+        else {
+            const fetch = await fetchData().then(data => {
+        if (data.data.hits.length === 0) {
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
-        }
-        else if (value !== inputEl.value) {
-        showBtn()
-
+        } else if (value !== inputEl.value) {
+            imageCounter = data.data.totalHits - perPage
+            showBtn()
+            console.log(data)
            Notiflix.Notify.success(`Hooray! We found ${data.data.totalHits} images.`) 
             value = inputEl.value
             galleryEl.innerHTML = ""
             onCreateMakrup(data.data.hits)
             gallery = new SimpleLightbox('.gallery a');
             disableBtn()
-
         } 
-   
-    })
+            })
+        }
 }
 
 async function fetchData() {
-        const response = axios.get(`${URL}?key=${KEY}&q=${inputEl.value}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${page}`)
+        const response = axios.get(`${URL}?key=${KEY}&q=${inputValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
         // const data = await response.json()
     
         return response
@@ -55,6 +59,10 @@ async function fetchData() {
 loadMoreEl.addEventListener('click', onLoadMore)
 
 async function onLoadMore() {
+    imageCounter -= perPage
+    if (imageCounter <= 0) {
+        loadMoreEl.classList.add("hidden")
+    }
     enableBtn()
     page+=1
     const moreFetch = await fetchData().then(data => {
